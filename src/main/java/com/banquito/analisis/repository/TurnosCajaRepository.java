@@ -1,6 +1,6 @@
 package com.banquito.analisis.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import com.banquito.analisis.model.TurnosCaja;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TurnosCajaRepository extends JpaRepository<TurnosCaja, String> {
+public interface TurnosCajaRepository extends MongoRepository<TurnosCaja, String> {
 
     List<TurnosCaja> findByCodigoCajaAndCodigoCajero(String codigoCaja, String codigoCajero);
     

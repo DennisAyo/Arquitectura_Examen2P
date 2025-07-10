@@ -6,23 +6,22 @@ import lombok.ToString;
 
 import com.banquito.analisis.enums.Denominacion;
 
-import jakarta.persistence.*;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
 @ToString
-@Embeddable
 public class DenominacionBilletes {
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "billete", length = 20, nullable = false)
+    @Field("billete")
     private Denominacion billete;
 
-    @Column(name = "cantidad_billetes", nullable = false)
+    @Field("cantidad_billetes")
     private Integer cantidadBilletes;
 
-    @Column(name = "monto", precision = 15, scale = 2, nullable = false)
+    @Field("monto")
     private BigDecimal monto;
 
     public DenominacionBilletes(Denominacion billete, Integer cantidadBilletes) {

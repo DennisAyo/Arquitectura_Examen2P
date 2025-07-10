@@ -2,10 +2,12 @@ package com.banquito.analisis.model;
 
 import lombok.*;
 
-
 import com.banquito.analisis.enums.EstadoTurno;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,34 +15,31 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @ToString
-@Entity
-@Table(name = "turnos_caja")
+@Document(collection = "turnos_caja")
 public class TurnosCaja {
 
     @Id
-    @Column(name = "codigo_turno", length = 50)
     private String codigoTurno;
 
-    @Column(name = "codigo_caja", length = 10, nullable = false)
+    @Field("codigo_caja")
     private String codigoCaja;
 
-    @Column(name = "codigo_cajero", length = 10, nullable = false)
+    @Field("codigo_cajero")
     private String codigoCajero;
 
-    @Column(name = "inicio_turno", nullable = false)
+    @Field("inicio_turno")
     private LocalDateTime inicioTurno;
 
-    @Column(name = "monto_inicial", precision = 15, scale = 2, nullable = false)
+    @Field("monto_inicial")
     private BigDecimal montoInicial;
 
-    @Column(name = "fin_turno")
+    @Field("fin_turno")
     private LocalDateTime finTurno;
 
-    @Column(name = "monto_final", precision = 15, scale = 2)
+    @Field("monto_final")
     private BigDecimal montoFinal;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado", length = 10, nullable = false)
+    @Field("estado")
     private EstadoTurno estado;
 
     public TurnosCaja(String codigoTurno) {

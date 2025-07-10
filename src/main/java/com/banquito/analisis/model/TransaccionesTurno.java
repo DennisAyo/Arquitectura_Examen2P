@@ -4,7 +4,10 @@ import lombok.*;
 
 import com.banquito.analisis.enums.TipoTransaccion;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,40 +16,34 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @ToString
-@Entity
-@Table(name = "transacciones_turno")
+@Document(collection = "transacciones_turno")
 public class TransaccionesTurno {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    private String id;
 
-    @Column(name = "codigo_caja", length = 10, nullable = false)
+    @Field("codigo_caja")
     private String codigoCaja;
 
-    @Column(name = "codigo_cajero", length = 10, nullable = false)
+    @Field("codigo_cajero")
     private String codigoCajero;
 
-    @Column(name = "codigo_turno", length = 50, nullable = false)
+    @Field("codigo_turno")
     private String codigoTurno;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_transaccion", length = 20, nullable = false)
+    @Field("tipo_transaccion")
     private TipoTransaccion tipoTransaccion;
 
-    @Column(name = "monto_total", precision = 15, scale = 2, nullable = false)
+    @Field("monto_total")
     private BigDecimal montoTotal;
 
-    @Column(name = "fecha_transaccion", nullable = false)
+    @Field("fecha_transaccion")
     private LocalDateTime fechaTransaccion;
 
-    @ElementCollection
-    @CollectionTable(name = "denominaciones_transaccion", 
-                    joinColumns = @JoinColumn(name = "transaccion_id"))
+    @Field("denominaciones")
     private List<DenominacionBilletes> denominaciones;
 
-    public TransaccionesTurno(Long id) {
+    public TransaccionesTurno(String id) {
         this.id = id;
     }
 
