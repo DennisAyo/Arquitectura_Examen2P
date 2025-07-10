@@ -62,7 +62,6 @@ public class GestionCajaService {
         log.info("Abriendo turno para caja: {} y cajero: {}", 
                 iniciarTurnoDTO.getCodigoCaja(), iniciarTurnoDTO.getCodigoCajero());
 
-        // Verificar que no exista un turno abierto
         Optional<TurnosCaja> turnoExistente = turnosCajaRepository.findByCodigoCajaAndCodigoCajeroAndEstado(
                 iniciarTurnoDTO.getCodigoCaja(), iniciarTurnoDTO.getCodigoCajero(), EstadoTurno.ABIERTO);
         
@@ -70,13 +69,10 @@ public class GestionCajaService {
             throw new TurnoYaAbiertoException(iniciarTurnoDTO.getCodigoCaja(), iniciarTurnoDTO.getCodigoCajero());
         }
 
-        // Calcular monto inicial
         BigDecimal montoInicial = calcularMontoTotal(iniciarTurnoDTO.getDenominaciones());
 
-        // Generar código de turno
         String codigoTurno = generarCodigoTurno(iniciarTurnoDTO.getCodigoCaja(), iniciarTurnoDTO.getCodigoCajero());
 
-        // Crear turno
         TurnosCaja turno = new TurnosCaja();
         turno.setCodigoTurno(codigoTurno);
         turno.setCodigoCaja(iniciarTurnoDTO.getCodigoCaja());
@@ -87,7 +83,6 @@ public class GestionCajaService {
 
         TurnosCaja turnoGuardado = turnosCajaRepository.save(turno);
 
-        // Registrar transacción de inicio
         registrarTransaccionInicio(turnoGuardado, iniciarTurnoDTO.getDenominaciones());
 
         log.info("Turno abierto exitosamente con código: {}", codigoTurno);
@@ -98,7 +93,6 @@ public class GestionCajaService {
     public TransaccionesTurnoDTO procesarTransaccion(ProcesarTransaccionDTO procesarTransaccionDTO) {
         log.info("Procesando transacción para turno: {}", procesarTransaccionDTO.getCodigoTurno());
 
-        // Verificar que el turno existe y está abierto
         TurnosCaja turno = turnosCajaRepository.findById(procesarTransaccionDTO.getCodigoTurno())
                 .orElseThrow(() -> new TurnoNotFoundException(procesarTransaccionDTO.getCodigoTurno()));
 
@@ -106,10 +100,8 @@ public class GestionCajaService {
             throw new TurnoYaCerradoException(procesarTransaccionDTO.getCodigoTurno());
         }
 
-        // Calcular monto total
         BigDecimal montoTotal = calcularMontoTotal(procesarTransaccionDTO.getDenominaciones());
 
-        // Crear transacción
         TransaccionesTurno transaccion = new TransaccionesTurno();
         transaccion.setCodigoCaja(turno.getCodigoCaja());
         transaccion.setCodigoCajero(turno.getCodigoCajero());
@@ -118,7 +110,6 @@ public class GestionCajaService {
         transaccion.setMontoTotal(montoTotal);
         transaccion.setFechaTransaccion(LocalDateTime.now());
         
-        // Convertir denominaciones
         List<DenominacionBilletes> denominaciones = new ArrayList<>();
         for (DenominacionBilletesDTO dto : procesarTransaccionDTO.getDenominaciones()) {
             denominaciones.add(denominacionBilletesMapper.toModel(dto));
@@ -135,7 +126,6 @@ public class GestionCajaService {
     public AlertaCierreDTO cerrarTurno(FinalizarTurnoDTO finalizarTurnoDTO) {
         log.info("Cerrando turno: {}", finalizarTurnoDTO.getCodigoTurno());
 
-        // Verificar que el turno existe y está abierto
         TurnosCaja turno = turnosCajaRepository.findById(finalizarTurnoDTO.getCodigoTurno())
                 .orElseThrow(() -> new TurnoNotFoundException(finalizarTurnoDTO.getCodigoTurno()));
 
@@ -143,16 +133,12 @@ public class GestionCajaService {
             throw new TurnoYaCerradoException(finalizarTurnoDTO.getCodigoTurno());
         }
 
-        // Calcular monto declarado
         BigDecimal montoDeclarado = calcularMontoTotal(finalizarTurnoDTO.getDenominacionesFinales());
 
-        // Calcular monto calculado basado en transacciones
         BigDecimal montoCalculado = calcularMontoCalculado(finalizarTurnoDTO.getCodigoTurno());
 
-        // Registrar transacción de cierre
         registrarTransaccionCierre(turno, finalizarTurnoDTO.getDenominacionesFinales());
 
-        // Actualizar turno
         turno.setFinTurno(LocalDateTime.now());
         turno.setMontoFinal(montoDeclarado);
         turno.setEstado(EstadoTurno.CERRADO);
