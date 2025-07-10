@@ -1,10 +1,6 @@
 package com.banquito.analisis.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import com.banquito.analisis.enums.TipoTransaccion;
 
